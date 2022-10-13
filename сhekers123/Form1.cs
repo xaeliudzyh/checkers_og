@@ -27,6 +27,8 @@ namespace сhekers123
 
         int[,] map = new int[mapSize, mapSize];
 
+        Button[,] buttons = new Button[mapSize, mapSize];
+
         Image whiteFig;
         Image blackFig;
 
@@ -138,7 +140,76 @@ namespace сhekers123
             prevButton = pressedButton;
         }
 
-         public bool IsFigureHasEatStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) //function that shows us if there is an enemy figure that can be eaten by us,
+        public void CloseSimpleSteps(List<Button> simpleSteps)
+        {
+            if (simpleSteps.Count > 0)
+            {
+                for (int i = 0; i < simpleSteps.Count; i++)
+                {
+                    simpleSteps[i].BackColor = GetPrevButtonColor(simpleSteps[i]);
+                    simpleSteps[i].Enabled = false;
+                }
+            }
+        }
+
+        public void ShowNextStep(int i,int j, bool isOneStep = true)
+        {
+            int dirX = i - pressedButton.Location.X / cellSize;    //moving on X-axis
+            int dirY = j - pressedButton.Location.Y / cellSize;    //moving on Y-axis
+            dirX = dirX > 0 ? 1 : -1;
+            dirY = dirY > 0 ? 1 : -1;
+            int il = i;
+            int jl = j;
+            bool canWe = true;   //bool that shows us possibility of building the next step
+            while (IsInsideBorders(il, jl))
+            {
+                if (map[i,j]!=0 && map[i,j]!= currentPlayer)
+                {
+                    canWe = false;
+                    break;
+                }
+                if (canWe)
+                    return;
+                List <Button> turnOff = new List<Button>();    //list of buttons to turn off
+                bool closeSimple = false;
+                int ik = il + dirX;
+                int jk = jl + dirY;
+                while (IsInsideBorders(ik, jk))
+                {
+                    if (map[ik, jk] == 0)
+                    {
+                        if (IsFigureHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))
+                        {
+                            closeSimple = true;
+                        }
+                        else
+                            turnOff.Add(buttons[ik, jk]);
+                        buttons[ik, jk].BackColor = Color.Yellow;
+                        buttons[ik, jk].Enabled = true;
+                        countEatSteps++;
+                    }
+                    else
+                        break;
+                    if (isOneStep)
+                        break;
+                    jk += dirY;
+                    ik += dirX;
+                }
+                if (closeSimple && turnOff.Count > 0)
+                    CloseSimpleSteps(turnOff);
+
+
+            }
+        }
+
+
+
+
+
+
+
+
+        public bool IsFigureHasEatStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) //function that shows us if there is an enemy figure that can be eaten by us,
                                                                                                            //and bool isOneStep shows us if the figure is the queen or just a simple figure
         {
             bool eatStep = false;
@@ -275,12 +346,11 @@ namespace сhekers123
 
         }
 
-
         public void CloseSteps()
         {
             for (int i = 0; i < mapSize; i++)
                 for (int j = 0; j < mapSize; j++)
-                    buttons[i, j] = GetPrevButtonColor(buttons[i, j]);
+                    buttons[i, j].BackColor = GetPrevButtonColor(buttons[i,j]);
         }
 
         public bool IsInsideBorders(int ti, int tj)                            //checking if the choosen button inside the map
@@ -307,7 +377,7 @@ namespace сhekers123
             {
                 for(int j = 0; j < mapSize; j++)
                 {
-                    button[i, j].Enabled = false;
+                    buttons[i, j].Enabled = false;
                 }
             }
         }
