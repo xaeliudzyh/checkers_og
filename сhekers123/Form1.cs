@@ -67,41 +67,64 @@ namespace сhekers123
 
             CreateMap();
         }
-        public void CreateMap()
+
+
+        /// <summary>
+        /// restarting the game
+        /// </summary>
+        public void ResetGame()
         {
-            this.Width = mapSize * cellSize;
-            this.Height = mapSize * cellSize;
-            
+            bool player1 = false;
+            bool player2 = false;
 
             for (int i = 0; i < mapSize; i++)
             {
                 for (int j = 0; j < mapSize; j++)
                 {
+                    if (map[i, j] == 1)
+                        player1 = true;
+                    if (map[i, j] == 2)
+                        player2 = true;
+                }
+            }
+            if (!player1 || !player2)
+            {
+                this.Controls.Clear();
+                Init();
+            }
+        }
 
+
+        public void CreateMap()
+        {
+            this.Width = (mapSize + 1) * cellSize;
+            this.Height = (mapSize + 1) * cellSize;
+
+            for (int i = 0; i < mapSize; i++)
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
                     Button button = new Button();
                     button.Location = new Point(j * cellSize, i * cellSize);
                     button.Size = new Size(cellSize, cellSize);
                     button.Click += new EventHandler(OnFigurePress);
                     if (map[i, j] == 1)
-                        button.Image = whiteFig;   //adding whiteFig png on 1 in massive
-                    else
-                        if (map[i, j] == 2)
-                            button.Image = blackFig;   //the same for blackFig png on 2 
+                        button.Image = whiteFig;
+                    else if (map[i, j] == 2) button.Image = blackFig;
 
                     button.BackColor = GetPrevButtonColor(button);
+                    button.ForeColor = Color.Red;
 
+                    buttons[i, j] = button;
 
                     this.Controls.Add(button);
                 }
-
-
-
             }
         }
         public void SwitchPlayer()
         {
             currentPlayer = currentPlayer == 1 ? 2 : 1;
-
+            ResetGame();
         }
 
 
@@ -186,9 +209,9 @@ namespace сhekers123
             if (map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] != 0 && map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] == currentPlayer)
             {
                 CloseSteps();
-                pressedButton.BackColor = Color.Red;
+                pressedButton.BackColor = Color.Red;   //coloring chosen figure
                 DeactivateAllButtons();
-                pressedButton.Enabled = true;
+                pressedButton.Enabled = true;      //enabling 
                 countEatSteps = 0;
                 if (pressedButton.Image == blackQ || pressedButton.Image == whiteQ)
                     ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize, false);
@@ -216,6 +239,7 @@ namespace сhekers123
                         DeleteEaten(pressedButton, prevButton);
                     }
                     int temp = map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize];
+                    //switching images
                     map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] = map[prevButton.Location.Y / cellSize, prevButton.Location.X / cellSize];
                     map[prevButton.Location.Y / cellSize, prevButton.Location.X / cellSize] = temp;
                     pressedButton.Image = prevButton.Image;
@@ -426,13 +450,18 @@ namespace сhekers123
             bool canWe = true;   //bool that shows us possibility of building the next step
             while (IsInsideBorders(il, jl))
             {
-                if (map[i,j]!=0 && map[i,j]!= currentPlayer)
+                if (map[i, j] != 0 && map[i, j] != currentPlayer)
                 {
                     canWe = false;
                     break;
                 }
-                if (canWe)
+                if (isOneStep)
                     return;
+                il += dirX;
+                jl += dirY;
+            }
+                if (canWe)
+                return;
                 List <Button> turnOff = new List<Button>();    //list of buttons to turn off
                 bool closeSimple = false;   //do we need to close "uneatable" steps?
                 int ik = il + dirX;
@@ -462,7 +491,7 @@ namespace сhekers123
                     CloseSimpleSteps(turnOff);
 
 
-            }
+            
         }
 
         /// <summary>
