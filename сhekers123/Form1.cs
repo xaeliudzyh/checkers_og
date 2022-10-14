@@ -17,7 +17,7 @@ namespace сhekers123
 
         int currentPlayer;
 
-
+        List<Button> simpleSteps = new List<Button>();  //simple(1-cage) steps
         int countEatSteps;     // number of "eatable" steps
         Button prevButton;    //previous button
         Button pressedButton;
@@ -140,6 +140,109 @@ namespace сhekers123
             prevButton = pressedButton;
         }
 
+        public void ShowSteps(int iCurrFigure, int jCurrFigure, bool isOnestep = true)
+        {
+            simpleSteps.Clear();
+            ShowDiagonal(iCurrFigure, jCurrFigure, isOnestep);
+            if (countEatSteps > 0)
+                CloseSimpleSteps(simpleSteps);
+        }
+
+        public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)
+        {
+            int j = JcurrFigure + 1;
+            for (int i = IcurrFigure - 1; i >= 0; i--)
+            {
+                if (currentPlayer == 1 && isOneStep && !isContinue) break;
+                if (IsInsideBorders(i, j))
+                {
+                    if (!DeterminePath(i, j))
+                        break;
+                }
+                if (j < 7)
+                    j++;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure - 1;
+            for (int i = IcurrFigure - 1; i >= 0; i--)
+            {
+                if (currentPlayer == 1 && isOneStep && !isContinue) break;
+                if (IsInsideBorders(i, j))
+                {
+                    if (!DeterminePath(i, j))
+                        break;
+                }
+                if (j > 0)
+                    j--;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure - 1;
+            for (int i = IcurrFigure + 1; i < 8; i++)
+            {
+                if (currentPlayer == 2 && isOneStep && !isContinue) break;
+                if (IsInsideBorders(i, j))
+                {
+                    if (!DeterminePath(i, j))
+                        break;
+                }
+                if (j > 0)
+                    j--;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+
+            j = JcurrFigure + 1;
+            for (int i = IcurrFigure + 1; i < 8; i++)
+            {
+                if (currentPlayer == 2 && isOneStep && !isContinue) break;
+                if (IsInsideBorders(i, j))
+                {
+                    if (!DeterminePath(i, j))
+                        break;
+                }
+                if (j < 7)
+                    j++;
+                else break;
+
+                if (isOneStep)
+                    break;
+            }
+        }
+
+        public bool DeterminePath(int ti, int tj)      //determing possible path
+        {
+
+            if (map[ti, tj] == 0 && isContinue==false)
+            {
+                buttons[ti, tj].BackColor = Color.Yellow;
+                buttons[ti, tj].Enabled = true;
+                simpleSteps.Add(buttons[ti, tj]);
+            }
+            else
+            {
+
+                if (map[ti, tj] != currentPlayer)
+                {
+                    if (pressedButton.Text == "D")     //checking if the figure is the queen of not, if yes, isOneStep = false
+                        ShowNextStep(ti, tj, false);
+                    else ShowNextStep(ti, tj);
+                }
+
+                return false;
+            }
+            return true;
+        }
+
         public void CloseSimpleSteps(List<Button> simpleSteps)
         {
             if (simpleSteps.Count > 0)
@@ -152,7 +255,7 @@ namespace сhekers123
             }
         }
 
-        public void ShowNextStep(int i,int j, bool isOneStep = true)
+        public void ShowNextStep(int i,int j, bool isOneStep = true) 
         {
             int dirX = i - pressedButton.Location.X / cellSize;    //moving on X-axis
             int dirY = j - pressedButton.Location.Y / cellSize;    //moving on Y-axis
@@ -171,14 +274,14 @@ namespace сhekers123
                 if (canWe)
                     return;
                 List <Button> turnOff = new List<Button>();    //list of buttons to turn off
-                bool closeSimple = false;
+                bool closeSimple = false;   //do we need to close "uneatable" steps?
                 int ik = il + dirX;
                 int jk = jl + dirY;
                 while (IsInsideBorders(ik, jk))
                 {
                     if (map[ik, jk] == 0)
                     {
-                        if (IsFigureHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))
+                        if (IsFigureHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))   //checking if we has an opportunity to eat smth from this cage
                         {
                             closeSimple = true;
                         }
@@ -201,14 +304,7 @@ namespace сhekers123
 
             }
         }
-
-
-
-
-
-
-
-
+ 
         public bool IsFigureHasEatStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) //function that shows us if there is an enemy figure that can be eaten by us,
                                                                                                            //and bool isOneStep shows us if the figure is the queen or just a simple figure
         {
