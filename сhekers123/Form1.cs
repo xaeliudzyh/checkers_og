@@ -104,6 +104,12 @@ namespace сhekers123
 
         }
 
+
+        /// <summary>
+        /// rturning the color of the sage when figure left it
+        /// </summary>
+        /// <param name="prevButton"></param>
+        /// <returns></returns>
         public Color GetPrevButtonColor(Button prevButton)
         {
             if ((prevButton.Location.Y / cellSize % 2) != 0) {
@@ -117,6 +123,40 @@ namespace сhekers123
             return Color.Linen ;
         }
 
+
+         /// <summary>
+        /// showing figures that have an "eatable" step
+        /// </summary>
+        public void ShowPossibleSteps()
+        {
+            bool isOneStep = true;
+            bool isEatStep = false;
+            DeactivateAllButtons();
+            for (int i = 0; i < mapSize; i++)
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
+                    if (map[i, j] == currentPlayer)
+                    {
+                        if (buttons[i, j].Image == blackQ || buttons[i, j].Image == whiteQ)//checking if the fihure os queen
+                            isOneStep = false;
+                        else isOneStep = true;
+                        if (IsButtonHasEatStep(i, j, isOneStep, new int[2] { 0, 0 }))
+                        {
+                            isEatStep = true;
+                            buttons[i, j].Enabled = true;
+                        }
+                    }
+                }
+            }
+            if (!isEatStep)
+                ActivateAllButtons();
+        }
+
+        /// <summary>
+        /// giving the figure rights of Queen
+        /// </summary>
+        /// <param name="button"></param>
         public void SwitchButtonToCheat(Button button)
         {
             if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 1 && button.Location.Y / cellSize == mapSize - 1)
@@ -131,8 +171,92 @@ namespace сhekers123
             }
         }
 
-        public void DeleteEaten(Button endButton, Button startButton)
+        /// <summary>
+        /// giving a pressed figure red color
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnFigurePress(object sender, EventArgs e)
         {
+            if (prevButton != null)
+                prevButton.BackColor = GetPrevButtonColor(prevButton);
+
+            pressedButton = sender as Button;
+
+            if (map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] != 0 && map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] == currentPlayer)
+            {
+                CloseSteps();
+                pressedButton.BackColor = Color.Red;
+                DeactivateAllButtons();
+                pressedButton.Enabled = true;
+                countEatSteps = 0;
+                if (pressedButton.Image == blackQ || pressedButton.Image == whiteQ)
+                    ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize, false);
+                else ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize);
+
+                if (isMoving)
+                {
+                    CloseSteps();
+                    pressedButton.BackColor = GetPrevButtonColor(pressedButton);
+                    ShowPossibleSteps();
+                    isMoving = false;
+                }
+                else
+                    isMoving = true;
+            }
+            else
+            {
+                if (isMoving)
+                {
+                    isContinue = false;
+                    if (Math.Abs(pressedButton.Location.X / cellSize - prevButton.Location.X / cellSize) > 1) 
+                        //if length of step>1, it means that figure ate someone
+                    {
+                        isContinue = true;
+                        DeleteEaten(pressedButton, prevButton);
+                    }
+                    int temp = map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize];
+                    map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] = map[prevButton.Location.Y / cellSize, prevButton.Location.X / cellSize];
+                    map[prevButton.Location.Y / cellSize, prevButton.Location.X / cellSize] = temp;
+                    pressedButton.Image = prevButton.Image;
+                    prevButton.Image = null;
+                    pressedButton.Text = prevButton.Text;
+                    prevButton.Text = "";
+                    SwitchButtonToCheat(pressedButton);
+                    countEatSteps = 0;
+                    isMoving = false;
+                    CloseSteps();
+                    DeactivateAllButtons();
+                    if (pressedButton.Image == blackQ || pressedButton.Image == whiteQ)
+                        ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize, false);
+                    else ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize);
+                    if (countEatSteps == 0 || !isContinue)
+                    {
+                        CloseSteps();
+                        SwitchPlayer();
+                        ShowPossibleSteps();
+                        isContinue = false;
+                    }
+                    else if (isContinue)
+                    {
+                        pressedButton.BackColor = Color.Red;
+                        pressedButton.Enabled = true;
+                        isMoving = true;
+                    }
+                }
+            }
+
+            prevButton = pressedButton;
+        }
+
+        /// <summary>
+        /// deleting buttons between endButton and startButton that was ate
+        /// </summary>
+        /// <param name="endButton"> starting cage</param>
+        /// <param name="startButton"> cage to jump on</param>
+
+        public void DeleteEaten(Button endButton, Button startButton)     
+        { 
             int count = Math.Abs(endButton.Location.Y / cellSize - startButton.Location.Y / cellSize);
             int startIndexX = endButton.Location.Y / cellSize - startButton.Location.Y / cellSize;
             int startIndexY = endButton.Location.X / cellSize - startButton.Location.X / cellSize;
@@ -141,10 +265,11 @@ namespace сhekers123
             int currCount = 0;
             int i = startButton.Location.Y / cellSize + startIndexX;
             int j = startButton.Location.X / cellSize + startIndexY;
-            while (currCount < count - 1)
+            
+            while (currCount < count - 1)   //running on [i,j] diapazone and deleting figures that needs to be deleted
             {
                 map[i, j] = 0;
-                buttons[i, j].Image = null;
+                buttons[i, j].Image = null;   //deleting image of the figurt
                 buttons[i, j].Text = "";
                 i += startIndexX;
                 j += startIndexY;
@@ -153,55 +278,34 @@ namespace сhekers123
 
         }
 
-        public void OnFigurePress(object sender, EventArgs e)
-        {
-            if (prevButton != null)
-                prevButton.BackColor = GetPrevButtonColor(prevButton);
-
-            Button pressedButton = sender as Button;
-            if (map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] != 0 &&
-                map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] == currentPlayer) 
-            {
-                pressedButton.BackColor = Color.Red;
-                isMoving = true;
-
-            }
-            else
-            {
-                if (isMoving)
-                {
-                    int temp = map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize];
-                    map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] = map[prevButton.Location.Y / cellSize, prevButton.Location.X / cellSize];
-                    map[prevButton.Location.Y / cellSize, prevButton.Location.X / cellSize]=temp;
-                    pressedButton.Image = prevButton.Image;
-                    prevButton.Image = null;
-                    isMoving = false;
-                }
-            }
-                 
-            prevButton = pressedButton;
-        }
-
-        public void ShowSteps(int iCurrFigure, int jCurrFigure, bool isOnestep = true)
+        /// <summary>
+        ///calling for this function when we tap on the button 
+        /// </summary>
+        /// <param name="iCurrFigure"></param>
+        /// <param name="jCurrFigure"></param>
+        /// <param name="isOnestep"> is the figure a simple figure or not</param>
+        public void ShowSteps(int iCurrFigure, int jCurrFigure, bool isOnestep = true)   
         {
             simpleSteps.Clear();
             ShowDiagonal(iCurrFigure, jCurrFigure, isOnestep);
-            if (countEatSteps > 0)
+            if (countEatSteps > 0)      //means that if we have eatable steps we turning off usuall steps
                 CloseSimpleSteps(simpleSteps);
-        }
-
-        public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)
+        } 
+        
+        public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)    //showing the diagonal for the steps
         {
-            int j = JcurrFigure + 1;
+
+            //checking for 1st player
+            int j = JcurrFigure + 1;  
             for (int i = IcurrFigure - 1; i >= 0; i--)
             {
                 if (currentPlayer == 1 && isOneStep && !isContinue) break;
-                if (IsInsideBorders(i, j))
+                if (IsInsideBorders(i, j))     //if the button is inside the borders
                 {
-                    if (!DeterminePath(i, j))
+                    if (!DeterminePath(i, j))  
                         break;
                 }
-                if (j < 7)
+                if (j < 7)   //j<7 means that if we will step forward, we still will be in the borders of the map 
                     j++;
                 else break;
 
@@ -209,7 +313,7 @@ namespace сhekers123
                     break;
             }
 
-            j = JcurrFigure - 1;
+            j = JcurrFigure - 1;   
             for (int i = IcurrFigure - 1; i >= 0; i--)
             {
                 if (currentPlayer == 1 && isOneStep && !isContinue) break;
@@ -226,6 +330,9 @@ namespace сhekers123
                     break;
             }
 
+
+
+            //cheking for the 2nd player
             j = JcurrFigure - 1;
             for (int i = IcurrFigure + 1; i < 8; i++)
             {
@@ -261,14 +368,14 @@ namespace сhekers123
             }
         }
 
-        public bool DeterminePath(int ti, int tj)      //determing possible path
+        public bool DeterminePath(int ti, int tj)      //determing if there is a possible path
         {
 
-            if (map[ti, tj] == 0 && isContinue==false)
+            if (map[ti, tj] == 0 && isContinue==false)      //is continuing shows us if we an continue the step to kill more than 1 figure 
             {
-                buttons[ti, tj].BackColor = Color.Yellow;
-                buttons[ti, tj].Enabled = true;
-                simpleSteps.Add(buttons[ti, tj]);
+                buttons[ti, tj].BackColor = Color.Yellow;      //lighing on this cage 
+                buttons[ti, tj].Enabled = true;    
+                simpleSteps.Add(buttons[ti, tj]);    
             }
             else
             {
@@ -276,8 +383,8 @@ namespace сhekers123
                 if (map[ti, tj] != currentPlayer)
                 {
                     if (pressedButton.Image == blackQ || pressedButton.Image == whiteQ)     //checking if the figure is the queen of not, if yes, isOneStep = false
-                        ShowNextStep(ti, tj, false);
-                    else ShowNextStep(ti, tj);
+                        ShowProceduralEat(ti, tj, false);
+                    else ShowProceduralEat(ti, tj);
                 }
 
                 return false;
@@ -285,7 +392,12 @@ namespace сhekers123
             return true;
         }
 
-        public void CloseSimpleSteps(List<Button> simpleSteps)
+
+        /// <summary>
+        /// turning off the buttons that have 1 step
+        /// </summary>
+        /// <param name="simpleSteps"></param>
+        public void CloseSimpleSteps(List<Button> simpleSteps)    
         {
             if (simpleSteps.Count > 0)
             {
@@ -295,9 +407,15 @@ namespace сhekers123
                     simpleSteps[i].Enabled = false;
                 }
             }
-        }
+        }    
 
-        public void ShowNextStep(int i,int j, bool isOneStep = true) 
+        /// <summary>
+        /// showing the procedure of eating
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        /// <param name="isOneStep"></param>
+        public void ShowProceduralEat(int i,int j, bool isOneStep = true)    
         {
             int dirX = i - pressedButton.Location.X / cellSize;    //moving on X-axis
             int dirY = j - pressedButton.Location.Y / cellSize;    //moving on Y-axis
@@ -323,7 +441,7 @@ namespace сhekers123
                 {
                     if (map[ik, jk] == 0)
                     {
-                        if (IsFigureHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))   //checking if we has an opportunity to eat smth from this cage
+                        if (IsButtonHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))   //checking if we has an opportunity to eat smth from this cage
                         {
                             closeSimple = true;
                         }
@@ -346,9 +464,17 @@ namespace сhekers123
 
             }
         }
- 
-        public bool IsFigureHasEatStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) //function that shows us if there is an enemy figure that can be eaten by us,
-                                                                                                           //and bool isOneStep shows us if the figure is the queen or just a simple figure
+
+        /// <summary>
+        /// function that shows us if there is an enemy figure that can be eaten by us,
+        ///and bool isOneStep shows us if the figure is the queen or just a simple figure
+        /// </summary>
+        /// <param name="iCurrentFigure"></param>
+        /// <param name="jCurrentFigure"></param>
+        /// <param name="isOneStep"></param>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        public bool IsButtonHasEatStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) 
         {
             bool eatStep = false;
             int j = jCurrentFigure + 1;
@@ -484,6 +610,9 @@ namespace сhekers123
 
         }
 
+        /// <summary>
+        /// closing the button that changed by eating og figure 
+        /// </summary>
         public void CloseSteps()
         {
             for (int i = 0; i < mapSize; i++)
@@ -491,14 +620,23 @@ namespace сhekers123
                     buttons[i, j].BackColor = GetPrevButtonColor(buttons[i,j]);
         }
 
-        public bool IsInsideBorders(int ti, int tj)                            //checking if the choosen button inside the map
+        /// <summary>
+        /// cheking if the [ti,tj] button is inside tha borders of the map
+        /// </summary>
+        /// <param name="ti"></param>
+        /// <param name="tj"></param>
+        /// <returns></returns>
+        public bool IsInsideBorders(int ti, int tj)  
         {
             if (ti >= mapSize || tj >= mapSize || tj < 0 || ti < 0)
                 return false;
             return true;
         }
 
-        public void ActivateAllButtons()                                               //function that turns on all buttons
+        /// <summary>
+        /// turning on all buttons
+        /// </summary>
+        public void ActivateAllButtons()  
         {
             for (int i = 0; i < mapSize; i++)
             {
@@ -509,7 +647,10 @@ namespace сhekers123
             }
         }
 
-        public void DeactivateAllButtons()                                         //function that turns off all buttons
+        /// <summary>
+        /// turning off all buttons
+        /// </summary>
+        public void DeactivateAllButtons()    
         {
             for(int i = 0; i < mapSize; i++)
             {
