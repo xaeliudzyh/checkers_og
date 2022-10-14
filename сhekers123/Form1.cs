@@ -31,12 +31,18 @@ namespace сhekers123
 
         Image whiteFig;
         Image blackFig;
+        Image whiteQ;
+        Image blackQ;
 
         public Form1()
         {
             InitializeComponent();
-            blackFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\b.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for white figure
-            whiteFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\w.png"), new Size(cellSize - 1, cellSize - 1));  // the same for black one
+            blackFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\b.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black figure
+            whiteFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\w.png"), new Size(cellSize - 1, cellSize - 1));  // the same for white one
+
+            blackQ = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\bq.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black queen
+            whiteQ = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\wq.png"), new Size(cellSize - 1, cellSize - 1));  // the same for white one
+
             this.Text = "Checkers";
 
             Init();
@@ -109,6 +115,42 @@ namespace сhekers123
                     return Color.Gray;
             }
             return Color.Linen ;
+        }
+
+        public void SwitchButtonToCheat(Button button)
+        {
+            if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 1 && button.Location.Y / cellSize == mapSize - 1)
+            {
+                
+                button.Image = whiteQ;
+
+            }
+            if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 2 && button.Location.Y / cellSize == 0)
+            {
+                button.Image = blackQ;
+            }
+        }
+
+        public void DeleteEaten(Button endButton, Button startButton)
+        {
+            int count = Math.Abs(endButton.Location.Y / cellSize - startButton.Location.Y / cellSize);
+            int startIndexX = endButton.Location.Y / cellSize - startButton.Location.Y / cellSize;
+            int startIndexY = endButton.Location.X / cellSize - startButton.Location.X / cellSize;
+            startIndexX = startIndexX < 0 ? -1 : 1;
+            startIndexY = startIndexY < 0 ? -1 : 1;
+            int currCount = 0;
+            int i = startButton.Location.Y / cellSize + startIndexX;
+            int j = startButton.Location.X / cellSize + startIndexY;
+            while (currCount < count - 1)
+            {
+                map[i, j] = 0;
+                buttons[i, j].Image = null;
+                buttons[i, j].Text = "";
+                i += startIndexX;
+                j += startIndexY;
+                currCount++;
+            }
+
         }
 
         public void OnFigurePress(object sender, EventArgs e)
@@ -233,7 +275,7 @@ namespace сhekers123
 
                 if (map[ti, tj] != currentPlayer)
                 {
-                    if (pressedButton.Text == "D")     //checking if the figure is the queen of not, if yes, isOneStep = false
+                    if (pressedButton.Image == blackQ || pressedButton.Image == whiteQ)     //checking if the figure is the queen of not, if yes, isOneStep = false
                         ShowNextStep(ti, tj, false);
                     else ShowNextStep(ti, tj);
                 }
