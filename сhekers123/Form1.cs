@@ -13,7 +13,7 @@ namespace сhekers123
     public partial class Form1 : Form
     {
         const int mapSize = 8;   // length of the desk
-        const int cellSize = 100;   //size of the cage
+        const int cellSize = 80;   //size of the cage
 
         int currentPlayer;
 
@@ -146,54 +146,6 @@ namespace сhekers123
             return Color.Linen ;
         }
 
-
-         /// <summary>
-        /// showing figures that have an "eatable" step
-        /// </summary>
-        public void ShowPossibleSteps()
-        {
-            bool isOneStep = true;
-            bool isEatStep = false;
-            DeactivateAllButtons();
-            for (int i = 0; i < mapSize; i++)
-            {
-                for (int j = 0; j < mapSize; j++)
-                {
-                    if (map[i, j] == currentPlayer)
-                    {
-                        if (buttons[i, j].Image == blackQ || buttons[i, j].Image == whiteQ)//checking if the fihure os queen
-                            isOneStep = false;
-                        else isOneStep = true;
-                        if (IsButtonHasEatStep(i, j, isOneStep, new int[2] { 0, 0 }))
-                        {
-                            isEatStep = true;
-                            buttons[i, j].Enabled = true;
-                        }
-                    }
-                }
-            }
-            if (!isEatStep)
-                ActivateAllButtons();
-        }
-
-        /// <summary>
-        /// giving the figure rights of Queen
-        /// </summary>
-        /// <param name="button"></param>
-        public void SwitchButtonToCheat(Button button)
-        {
-            if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 1 && button.Location.Y / cellSize == mapSize - 1)
-            {
-                
-                button.Image = whiteQ;
-
-            }
-            if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 2 && button.Location.Y / cellSize == 0)
-            {
-                button.Image = blackQ;
-            }
-        }
-
         /// <summary>
         /// giving a pressed figure red color
         /// </summary>
@@ -232,8 +184,8 @@ namespace сhekers123
                 if (isMoving)
                 {
                     isContinue = false;
-                    if (Math.Abs(pressedButton.Location.X / cellSize - prevButton.Location.X / cellSize) > 1) 
-                        //if length of step>1, it means that figure ate someone
+                    if (Math.Abs(pressedButton.Location.X / cellSize - prevButton.Location.X / cellSize) > 1)
+                    //if length of step>1, it means that figure ate someone
                     {
                         isContinue = true;
                         DeleteEaten(pressedButton, prevButton);
@@ -246,7 +198,7 @@ namespace сhekers123
                     prevButton.Image = null;
                     pressedButton.Text = prevButton.Text;
                     prevButton.Text = "";
-                    SwitchButtonToCheat(pressedButton);
+                    SwitchButtonToQueen(pressedButton);
                     countEatSteps = 0;
                     isMoving = false;
                     CloseSteps();
@@ -274,11 +226,57 @@ namespace сhekers123
         }
 
         /// <summary>
+        /// showing figures that have an "eatable" step
+        /// </summary>
+        public void ShowPossibleSteps()
+        {
+            bool isOneStep = true;
+            bool isEatStep = false;
+            DeactivateAllButtons();
+            for (int i = 0; i < mapSize; i++)
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
+                    if (map[i, j] == currentPlayer)
+                    {
+                        if (buttons[i, j].Image == blackQ || buttons[i, j].Image == whiteQ)//checking if the fihure os queen
+                            isOneStep = false;
+                        else isOneStep = true;
+                        if (IsButtonHasEatStep(i, j, isOneStep, new int[2] { 0, 0 }))
+                        {
+                            isEatStep = true;
+                            buttons[i, j].Enabled = true;
+                        }
+                    }
+                }
+            }
+            if (!isEatStep)
+                ActivateAllButtons();
+        }
+
+        /// <summary>
+        /// giving the figure rights of Queen
+        /// </summary>
+        /// <param name="button"></param>
+        public void SwitchButtonToQueen(Button button)
+        {
+            if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 1 && button.Location.Y / cellSize == mapSize - 1)
+            {
+                
+                button.Image = whiteQ;
+
+            }
+            if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 2 && button.Location.Y / cellSize == 0)
+            {
+                button.Image = blackQ;
+            }
+        }
+
+        /// <summary>
         /// deleting buttons between endButton and startButton that was ate
         /// </summary>
         /// <param name="endButton"> starting cage</param>
         /// <param name="startButton"> cage to jump on</param>
-
         public void DeleteEaten(Button endButton, Button startButton)     
         { 
             int count = Math.Abs(endButton.Location.Y / cellSize - startButton.Location.Y / cellSize);
@@ -416,7 +414,6 @@ namespace сhekers123
             return true;
         }
 
-
         /// <summary>
         /// turning off the buttons that have 1 step
         /// </summary>
@@ -441,8 +438,8 @@ namespace сhekers123
         /// <param name="isOneStep"></param>
         public void ShowProceduralEat(int i,int j, bool isOneStep = true)    
         {
-            int dirX = i - pressedButton.Location.X / cellSize;    //moving on X-axis
-            int dirY = j - pressedButton.Location.Y / cellSize;    //moving on Y-axis
+            int dirX = i - pressedButton.Location.Y / cellSize;    //moving on X-axis
+            int dirY = j - pressedButton.Location.X / cellSize;    //moving on Y-axis
             dirX = dirX > 0 ? 1 : -1;
             dirY = dirY > 0 ? 1 : -1;
             int il = i;
@@ -488,10 +485,7 @@ namespace сhekers123
                     ik += dirX;
                 }
                 if (closeSimple && turnOff.Count > 0)
-                    CloseSimpleSteps(turnOff);
-
-
-            
+                    CloseSimpleSteps(turnOff);         
         }
 
         /// <summary>
