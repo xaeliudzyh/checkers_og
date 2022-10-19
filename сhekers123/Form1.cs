@@ -95,6 +95,9 @@ namespace сhekers123
         }
 
 
+        /// <summary>
+        /// creating the map 8*8
+        /// </summary>
         public void CreateMap()
         {
             this.Width = (mapSize + 1) * cellSize;
@@ -121,6 +124,10 @@ namespace сhekers123
                 }
             }
         }
+
+        /// <summary>
+        /// switching the player after the step
+        /// </summary>
         public void SwitchPlayer()
         {
             currentPlayer = currentPlayer == 1 ? 2 : 1;
@@ -312,9 +319,17 @@ namespace сhekers123
             ShowDiagonal(iCurrFigure, jCurrFigure, isOnestep);
             if (countEatSteps > 0)      //means that if we have eatable steps we turning off usuall steps
                 CloseSimpleSteps(simpleSteps);
-        } 
-        
-        public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)    //showing the diagonal for the steps
+        }
+
+
+        /// <summary>
+        /// showing the diagonal for the steps
+        /// </summary>
+        /// <param name="IcurrFigure"></param>
+        /// <param name="JcurrFigure"></param>
+        /// <param name="isOneStep"></param>
+
+        public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)    
         {
 
             //checking for 1st player
@@ -390,7 +405,15 @@ namespace сhekers123
             }
         }
 
-        public bool DeterminePath(int ti, int tj)      //determing if there is a possible path
+
+
+        /// <summary>
+        /// determing if there is a possible path
+        /// </summary>
+        /// <param name="ti"></param>
+        /// <param name="tj"></param>
+        /// <returns></returns>
+        public bool DeterminePath(int ti, int tj)      
         {
 
             if (map[ti, tj] == 0 && isContinue==false)      //is continuing shows us if we an continue the step to kill more than 1 figure 

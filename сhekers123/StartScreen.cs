@@ -28,5 +28,11 @@ namespace сhekers123
 
             gameWindow.Show();
         }
+
+        private void HelpScreen(object sender, EventArgs e)
+        {
+            HelpScreen helpScr = new HelpScreen();
+            helpScr.Show();
+        }
     }
 }
