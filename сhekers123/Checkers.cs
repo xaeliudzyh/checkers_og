@@ -10,8 +10,12 @@ using System.Windows.Forms;
 
 namespace сhekers123
 {
+
+
     public partial class Checkers : Form
     {
+        
+
         const int mapSize = 8;   // length of the desk
         const int cellSize = 80;   //size of the cage
 
@@ -310,13 +314,13 @@ namespace сhekers123
         /// <summary>
         ///calling for this function when we tap on the button 
         /// </summary>
-        /// <param name="iCurrFigure"></param>
-        /// <param name="jCurrFigure"></param>
+        /// <param name="dirXofCurrentFigure"></param>
+        /// <param name="dirYofCurrentFigure"></param>
         /// <param name="isOnestep"> is the figure a simple figure or not</param>
-        public void ShowSteps(int iCurrFigure, int jCurrFigure, bool isOnestep = true)   
+        public void ShowSteps(int dirXofCurrentFigure, int dirYofCurrentFigure, bool isOnestep = true)   
         {
             simpleSteps.Clear();
-            ShowDiagonalSteps(iCurrFigure, jCurrFigure, isOnestep);
+            ShowDiagonalSteps(dirXofCurrentFigure, dirYofCurrentFigure, isOnestep);
             if (countEatSteps > 0)      //means that if we have eatable steps we turning off usuall steps
                 CloseSimpleSteps(simpleSteps);
         }
@@ -325,16 +329,16 @@ namespace сhekers123
         /// <summary>
         /// showing the diagonal for the steps
         /// </summary>
-        /// <param name="IcurrFigure"></param>
-        /// <param name="JcurrFigure"></param>
+        /// <param name="dirXofCurrentFigure"></param>
+        /// <param name="dirYofCurrentFigure"></param>
         /// <param name="isOneStep"></param>
 
-        public void ShowDiagonalSteps(int IcurrFigure, int JcurrFigure, bool isOneStep = false)    
+        public void ShowDiagonalSteps(int dirXofCurrentFigure, int dirYofCurrentFigure, bool isOneStep = false)    
         {
 
             //checking for 1st player
-            int j = JcurrFigure + 1;  
-            for (int i = IcurrFigure - 1; i >= 0; i--)
+            int j = dirYofCurrentFigure + 1;  
+            for (int i = dirXofCurrentFigure - 1; i >= 0; i--)
             {
                 if (currentPlayer == 1 && isOneStep && !isContinue) break;
                 if (IsInsideBorders(i, j))     //if the button is inside the borders
@@ -350,8 +354,8 @@ namespace сhekers123
                     break;
             }
 
-            j = JcurrFigure - 1;   
-            for (int i = IcurrFigure - 1; i >= 0; i--)
+            j = dirYofCurrentFigure - 1;   
+            for (int i = dirXofCurrentFigure - 1; i >= 0; i--)
             {
                 if (currentPlayer == 1 && isOneStep && !isContinue) break;
                 if (IsInsideBorders(i, j))
@@ -370,8 +374,8 @@ namespace сhekers123
 
 
             //cheking for the 2nd player
-            j = JcurrFigure - 1;
-            for (int i = IcurrFigure + 1; i < 8; i++)
+            j = dirYofCurrentFigure - 1;
+            for (int i = dirXofCurrentFigure + 1; i < 8; i++)
             {
                 if (currentPlayer == 2 && isOneStep && !isContinue) break;
                 if (IsInsideBorders(i, j))
@@ -387,8 +391,8 @@ namespace сhekers123
                     break;
             }
 
-            j = JcurrFigure + 1;
-            for (int i = IcurrFigure + 1; i < 8; i++)
+            j = dirYofCurrentFigure + 1;
+            for (int i = dirXofCurrentFigure + 1; i < 8; i++)
             {
                 if (currentPlayer == 2 && isOneStep && !isContinue) break;
                 if (IsInsideBorders(i, j))
@@ -515,16 +519,16 @@ namespace сhekers123
         /// function that shows us if there is an enemy figure that can be eaten by us,
         ///and bool isOneStep shows us if the figure is the queen or just a simple figure
         /// </summary>
-        /// <param name="iCurrentFigure"></param>
-        /// <param name="jCurrentFigure"></param>
+        /// <param name="dirXofCurrentFigure"></param>
+        /// <param name="dirYofCurrentFigure"></param>
         /// <param name="isOneStep"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool PossibilityOfStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) 
+        public bool PossibilityOfStep(int dirXofCurrentFigure, int dirYofCurrentFigure, bool isOneStep, int[] dir) 
         {
             bool eatStep = false;
-            int j = jCurrentFigure + 1;
-            for(int i = iCurrentFigure; i >= 0; i--)
+            int j = dirYofCurrentFigure + 1;
+            for(int i = dirXofCurrentFigure; i >= 0; i--)
             {
                 if (currentPlayer == 1 && isOneStep && !isContinue)      // figure is not a qoeen, its first step and player 1
                     break;
@@ -555,8 +559,8 @@ namespace сhekers123
             }
 
 
-            j = jCurrentFigure - 1;
-            for (int i = iCurrentFigure; i >= 0; i--)
+            j = dirYofCurrentFigure - 1;
+            for (int i = dirXofCurrentFigure; i >= 0; i--)
             {
                 if (currentPlayer == 1 && isOneStep && !isContinue)      // figure is not a qoeen, its first step and player 1
                     break;
@@ -588,8 +592,8 @@ namespace сhekers123
 
 
 
-            j=jCurrentFigure - 1;
-            for (int i = iCurrentFigure; i >= 0; i--)
+            j=dirYofCurrentFigure - 1;
+            for (int i = dirXofCurrentFigure; i >= 0; i--)
             {
                 if (currentPlayer == 2 && isOneStep && !isContinue)      // figure is not a qoeen, its first step and player 1
                     break;
@@ -621,8 +625,8 @@ namespace сhekers123
 
 
 
-            j = jCurrentFigure + 1;
-            for (int i = iCurrentFigure; i >= 0; i--)
+            j = dirYofCurrentFigure + 1;
+            for (int i = dirXofCurrentFigure; i >= 0; i--)
             {
                 if (currentPlayer == 2 && isOneStep && !isContinue)      // figure is not a qoeen, its first step and player 1
                     break;
@@ -707,6 +711,7 @@ namespace сhekers123
             }
         }
 
+        
     }
 }
 

@@ -1,4 +1,7 @@
-﻿namespace сhekers123
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace сhekers123
 {
     partial class Checkers
     {
@@ -19,7 +22,7 @@
             }
             base.Dispose(disposing);
         }
-
+        
         #region Код, автоматически созданный конструктором форм Windows
 
         /// <summary>
@@ -32,11 +35,12 @@
             // 
             // Checkers
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1479, 1335);
+            this.ClientSize = new System.Drawing.Size(1379, 1255);
             this.Name = "Checkers";
-            this.Text = "Form1";
+            this.Text = "Checkers";
             this.ResumeLayout(false);
 
         }
