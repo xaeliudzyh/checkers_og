@@ -37,11 +37,11 @@ namespace сhekers123
         public Checkers()
         {
             InitializeComponent();
-            blackFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\b.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black figure
-            whiteFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\w.png"), new Size(cellSize - 1, cellSize - 1));  // the same for white one
+            blackFig = new Bitmap(new Bitmap(@"C:\source\repos\davaii\b.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black figure
+            whiteFig = new Bitmap(new Bitmap(@"C:\source\repos\davaii\w.png"), new Size(cellSize - 1, cellSize - 1));  // the same for white one
 
-            blackQ = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\bq.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black queen
-            whiteQ = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\wq.png"), new Size(cellSize - 1, cellSize - 1));  // the same for white one
+            blackQ = new Bitmap(new Bitmap(@"C:\source\repos\davaii\bq.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black queen
+            whiteQ = new Bitmap(new Bitmap(@"C:\source\repos\davaii\wq.png"), new Size(cellSize - 1, cellSize - 1));  // the same for white one
 
             this.Text = "Checkers";
 
@@ -110,12 +110,12 @@ namespace сhekers123
                     Button button = new Button();
                     button.Location = new Point(j * cellSize, i * cellSize);
                     button.Size = new Size(cellSize, cellSize);
-                    button.Click += new EventHandler(OnFigurePress);
+                    button.Click += new EventHandler(PressingOnFigure);
                     if (map[i, j] == 1)
                         button.Image = whiteFig;
                     else if (map[i, j] == 2) button.Image = blackFig;
 
-                    button.BackColor = GetPrevButtonColor(button);
+                    button.BackColor = GetPreviousButtonColor(button);
                     button.ForeColor = Color.Red;
 
                     buttons[i, j] = button;
@@ -140,7 +140,7 @@ namespace сhekers123
         /// </summary>
         /// <param name="prevButton"></param>
         /// <returns></returns>
-        public Color GetPrevButtonColor(Button prevButton)
+        public Color GetPreviousButtonColor(Button prevButton)
         {
             if ((prevButton.Location.Y / cellSize % 2) != 0) {
                 if ((prevButton.Location.X / cellSize % 2) == 0)
@@ -158,10 +158,10 @@ namespace сhekers123
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void OnFigurePress(object sender, EventArgs e)
+        public void PressingOnFigure(object sender, EventArgs e)
         {
             if (prevButton != null)
-                prevButton.BackColor = GetPrevButtonColor(prevButton);
+                prevButton.BackColor = GetPreviousButtonColor(prevButton);
 
             pressedButton = sender as Button;
 
@@ -179,7 +179,7 @@ namespace сhekers123
                 if (isMoving)
                 {
                     CloseSteps();
-                    pressedButton.BackColor = GetPrevButtonColor(pressedButton);
+                    pressedButton.BackColor = GetPreviousButtonColor(pressedButton);
                     ShowPossibleSteps();
                     isMoving = false;
                 }
@@ -249,7 +249,7 @@ namespace сhekers123
                         if (buttons[i, j].Image == blackQ || buttons[i, j].Image == whiteQ)//checking if the fihure os queen
                             isOneStep = false;
                         else isOneStep = true;
-                        if (IsButtonHasEatStep(i, j, isOneStep, new int[2] { 0, 0 }))
+                        if (PossibilityOfStep(i, j, isOneStep, new int[2] { 0, 0 }))
                         {
                             isEatStep = true;
                             buttons[i, j].Enabled = true;
@@ -316,7 +316,7 @@ namespace сhekers123
         public void ShowSteps(int iCurrFigure, int jCurrFigure, bool isOnestep = true)   
         {
             simpleSteps.Clear();
-            ShowDiagonal(iCurrFigure, jCurrFigure, isOnestep);
+            ShowDiagonalSteps(iCurrFigure, jCurrFigure, isOnestep);
             if (countEatSteps > 0)      //means that if we have eatable steps we turning off usuall steps
                 CloseSimpleSteps(simpleSteps);
         }
@@ -329,7 +329,7 @@ namespace сhekers123
         /// <param name="JcurrFigure"></param>
         /// <param name="isOneStep"></param>
 
-        public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)    
+        public void ShowDiagonalSteps(int IcurrFigure, int JcurrFigure, bool isOneStep = false)    
         {
 
             //checking for 1st player
@@ -447,7 +447,7 @@ namespace сhekers123
             {
                 for (int i = 0; i < simpleSteps.Count; i++)
                 {
-                    simpleSteps[i].BackColor = GetPrevButtonColor(simpleSteps[i]);
+                    simpleSteps[i].BackColor = GetPreviousButtonColor(simpleSteps[i]);
                     simpleSteps[i].Enabled = false;
                 }
             }
@@ -490,7 +490,7 @@ namespace сhekers123
                 {
                     if (map[ik, jk] == 0)
                     {
-                        if (IsButtonHasEatStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))   //checking if we has an opportunity to eat smth from this cage
+                        if (PossibilityOfStep(ik, jk, isOneStep, new int[2] { dirX, dirY }))   //checking if we has an opportunity to eat smth from this cage
                         {
                             closeSimple = true;
                         }
@@ -520,7 +520,7 @@ namespace сhekers123
         /// <param name="isOneStep"></param>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public bool IsButtonHasEatStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) 
+        public bool PossibilityOfStep(int iCurrentFigure, int jCurrentFigure, bool isOneStep, int[] dir) 
         {
             bool eatStep = false;
             int j = jCurrentFigure + 1;
@@ -663,7 +663,7 @@ namespace сhekers123
         {
             for (int i = 0; i < mapSize; i++)
                 for (int j = 0; j < mapSize; j++)
-                    buttons[i, j].BackColor = GetPrevButtonColor(buttons[i,j]);
+                    buttons[i, j].BackColor = GetPreviousButtonColor(buttons[i,j]);
         }
 
         /// <summary>
