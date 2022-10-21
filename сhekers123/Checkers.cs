@@ -104,7 +104,7 @@ namespace сhekers123
         /// </summary>
         public void CreateMap()
         {
-            this.Width = (mapSize + 1) * cellSize;
+            this.Width = (mapSize+2) * cellSize;
             this.Height = (mapSize + 1) * cellSize;
 
             for (int i = 0; i < mapSize; i++)
@@ -711,7 +711,12 @@ namespace сhekers123
             }
         }
 
-        
+        private void MainMenu(object sender, EventArgs e)
+        {
+            StartScreen menu = new StartScreen();
+            menu.Show();
+            this.Hide();
+        }
     }
 }
 
