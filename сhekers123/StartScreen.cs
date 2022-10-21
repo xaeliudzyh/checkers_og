@@ -17,22 +17,18 @@ namespace сhekers123
             InitializeComponent();
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void LoadGame(object sender, EventArgs e)
         {
-            Form1 gameWindow = new Form1();
-
+            Checkers gameWindow = new Checkers();
             gameWindow.Show();
+            this.Hide();
         }
 
         private void HelpScreen(object sender, EventArgs e)
         {
             HelpScreen helpScr = new HelpScreen();
             helpScr.Show();
+            this.Hide();
         }
     }
 }

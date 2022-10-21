@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace сhekers123
 {
-    public partial class Form1 : Form
+    public partial class Checkers : Form
     {
         const int mapSize = 8;   // length of the desk
         const int cellSize = 80;   //size of the cage
@@ -34,7 +34,7 @@ namespace сhekers123
         Image whiteQ;
         Image blackQ;
 
-        public Form1()
+        public Checkers()
         {
             InitializeComponent();
             blackFig = new Bitmap(new Bitmap(@"C:\source\repos\сhekers123\b.png"), new Size(cellSize - 4, cellSize - 4));      //adding a png for black figure

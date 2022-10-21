@@ -1,6 +1,6 @@
 ﻿namespace сhekers123
 {
-    partial class Form1
+    partial class Checkers
     {
         /// <summary>
         /// Обязательная переменная конструктора.

@@ -17,9 +17,11 @@ namespace сhekers123
             InitializeComponent();
         }
 
-        private void label3_Click(object sender, EventArgs e)
+        private void backToMenu(object sender, EventArgs e)
         {
-
+            StartScreen back = new StartScreen();
+            back.Show();
+            this.Hide();
         }
     }
 }

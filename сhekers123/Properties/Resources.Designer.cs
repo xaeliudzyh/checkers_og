@@ -63,6 +63,26 @@ namespace сhekers123.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap back_button_3800698_3334176 {
+            get {
+                object obj = ResourceManager.GetObject("back-button-3800698-3334176", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap back_button_icon {
+            get {
+                object obj = ResourceManager.GetObject("back-button-icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap bg_light {
             get {
                 object obj = ResourceManager.GetObject("bg-light", resourceCulture);

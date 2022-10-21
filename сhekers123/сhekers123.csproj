@@ -47,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="Checkers.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Checkers.Designer.cs">
+      <DependentUpon>Checkers.cs</DependentUpon>
     </Compile>
     <Compile Include="HelpScreen.cs">
       <SubType>Form</SubType>
@@ -67,8 +67,8 @@
     <Compile Include="StartScreen.Designer.cs">
       <DependentUpon>StartScreen.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Checkers.resx">
+      <DependentUpon>Checkers.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HelpScreen.resx">
       <DependentUpon>HelpScreen.cs</DependentUpon>
@@ -101,6 +101,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\bg-light.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\back-button-3800698-3334176.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\back-button-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
